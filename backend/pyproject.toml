@@ -1,0 +1,27 @@
+[tool.poetry]
+name = "backend"
+version = "0.1.0"
+description = ""
+authors = ["TimSlavich"]
+packages = [{include = "app"}]
+[tool.poetry.dependencies]
+python = "^3.12"
+langchain = "^0.3.17"
+langchain-openai = "^0.3.3"
+langchain-community = "^0.3.16"
+fastapi = "^0.115.8"
+tortoise-orm = "^0.24.0"
+pydantic = "^2.10.6"
+envparse = "^0.2.0"
+passlib = "^1.7.4"
+pyjwt = "^2.10.1"
+uvicorn = "^0.34.0"
+faiss-cpu = "^1.10.0"
+python-multipart = "^0.0.20"
+asyncpg = "^0.30.0"
+bcrypt = "4.0.1"
+websockets = "^14.2"
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"

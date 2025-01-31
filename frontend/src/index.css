@@ -1,0 +1,171 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 240 10% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+    --primary: 240 5.9% 10%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 240 4.8% 95.9%;
+    --secondary-foreground: 240 5.9% 10%;
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+    --accent: 240 4.8% 95.9%;
+    --accent-foreground: 240 5.9% 10%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --ring: 240 5.9% 10%;
+    --radius: 0.75rem;
+    --chat-user: 240 5.9% 10%;
+    --chat-user-foreground: 0 0% 98%;
+    --chat-ai: 240 4.8% 95.9%;
+    --chat-ai-foreground: 240 5.9% 10%;
+  }
+
+  .dark {
+    --background: 240 10% 10%;
+    --foreground: 0 0% 98%;
+    --card: 240 10% 14%;
+    --card-foreground: 0 0% 98%;
+    --popover: 240 10% 14%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 240 10% 10%;
+    --secondary: 240 5.9% 16%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 240 5.9% 16%;
+    --muted-foreground: 0 0% 60%;
+    --accent: 240 5.9% 16%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 10% 20%;
+    --input: 240 10% 20%;
+    --ring: 240 10% 80%;
+    --chat-user: 0 0% 20%;
+    --chat-user-foreground: 0 0% 98%;
+    --chat-ai: 240 5.9% 20%;
+    --chat-ai-foreground: 0 0% 98%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+@layer utilities {
+  .glass {
+    @apply bg-white/80 backdrop-blur-[8px] border border-white/20;
+  }
+
+  .glass-dark {
+    @apply bg-black/80 backdrop-blur-[8px] border border-white/10;
+  }
+
+  .chat-container {
+    @apply flex flex-col gap-4 px-4 py-4 md:px-8 md:py-6;
+  }
+
+  .message-bubble {
+    @apply rounded-lg p-4 max-w-[80%] md:max-w-[70%] animate-slide-in;
+  }
+
+  .message-user {
+    @apply bg-chat-user text-chat-user-foreground self-end;
+  }
+
+  .message-ai {
+    @apply bg-chat-ai text-chat-ai-foreground self-start;
+  }
+
+  .chat-item {
+    @apply w-full rounded-lg transition-colors flex items-center justify-between px-3 py-2;
+  }
+  
+  /* ✅ Выбранный чат - СВЕТЛАЯ ТЕМА */
+  .chat-item.selected {
+    @apply bg-primary text-white font-semibold;
+  }
+  
+  /* ✅ Гарантия видимости текста в светлой теме при выборе */
+  .chat-item.selected .chat-title,
+  .chat-item.selected .chat-preview,
+  .chat-item.selected .chat-timestamp {
+    @apply text-white;
+  }
+  
+  /* ✅ Наведение */
+  .chat-item:hover {
+    @apply bg-muted text-foreground;
+  }
+  
+  /* ✅ Гарантия видимости текста при наведении */
+  .chat-item:hover .chat-title,
+  .chat-item:hover .chat-preview,
+  .chat-item:hover .chat-timestamp {
+    @apply text-foreground;
+  }
+  
+  /* ✅ Исправление в тёмной теме */
+  .dark .chat-item.selected {
+    @apply bg-gray-700 text-white;
+  }
+  
+  /* ✅ Гарантия видимости текста в тёмной теме при выборе */
+  .dark .chat-item.selected .chat-title,
+  .dark .chat-item.selected .chat-preview,
+  .dark .chat-item.selected .chat-timestamp {
+    @apply text-white;
+  }
+  
+  /* ✅ Исправление в тёмной теме при наведении */
+  .dark .chat-item:hover {
+    @apply bg-gray-600 text-white;
+  }
+  
+  /* ✅ Исправление видимости текста в тёмной теме при наведении */
+  .dark .chat-item:hover .chat-title,
+  .dark .chat-item:hover .chat-preview,
+  .dark .chat-item:hover .chat-timestamp {
+    @apply text-white;
+  }
+  
+  /* ✅ Уменьшаем размер текста времени создания чата */
+  .chat-timestamp {
+    @apply text-[10px] text-muted-foreground;
+  }
+  
+  /* ✅ Кнопки редактирования и удаления */
+  .chat-actions {
+    @apply flex gap-1 w-[60px] justify-end shrink-0 opacity-0 transition-opacity;
+  }
+  
+  /* ✅ Делаем кнопки видимыми только при наведении */
+  .chat-item:hover .chat-actions {
+    @apply opacity-100;
+  }
+  
+  /* ✅ Стили для кнопок */
+  .edit-button {
+    @apply text-muted-foreground hover:text-foreground;
+  }
+  
+  .delete-button {
+    @apply text-destructive hover:text-red-500;
+  }
+}
