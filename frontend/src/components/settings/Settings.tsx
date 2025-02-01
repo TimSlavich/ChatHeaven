@@ -1,17 +1,19 @@
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/hooks/use-toast";
 import { ThemeSettings } from "./ThemeSettings";
 import { SecuritySettings } from "./SecuritySettings";
 import { SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
+import { useAuth } from "@/hooks/use-auth";
 
-export const Settings = ({ onClose }: { onClose: () => void }) => {
-  const { toast } = useToast();
+interface SettingsProps {
+  onClose: () => void;
+}
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user_id");
-    window.location.href = "/login";
-  };
+/**
+ * Settings component
+ * Manages theme settings, security options, and logout functionality.
+ */
+export const Settings = ({ onClose }: SettingsProps) => {
+  const { logout } = useAuth();
 
   return (
     <div className="p-6 w-full transition-transform duration-300">
@@ -32,7 +34,7 @@ export const Settings = ({ onClose }: { onClose: () => void }) => {
         </div>
 
         <div className="border-t pt-4">
-          <Button onClick={handleLogout} className="bg-red-700 text-white w-full">
+          <Button onClick={logout} className="bg-red-700 text-white w-full">
             Logout
           </Button>
         </div>

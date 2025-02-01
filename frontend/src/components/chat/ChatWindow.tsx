@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, memo } from "react";
 import { ChatMessage } from "./ChatMessage";
 import { ChatInput } from "./ChatInput";
 
@@ -15,7 +15,11 @@ interface ChatWindowProps {
   isLoading?: boolean;
 }
 
-export const ChatWindow = ({ messages, onSendMessage, isLoading }: ChatWindowProps) => {
+/**
+ * ChatWindow Component
+ * - Ensures only chat messages scroll while keeping the input fixed.
+ */
+export const ChatWindow = memo(({ messages, onSendMessage, isLoading }: ChatWindowProps) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -23,14 +27,19 @@ export const ChatWindow = ({ messages, onSendMessage, isLoading }: ChatWindowPro
   }, [messages]);
 
   return (
-    <div className="flex flex-col h-full">
-      <div className="flex-1 overflow-y-auto chat-container p-4">
+    <div className="flex flex-col h-full w-full max-h-screen">
+      {/* Scrollable Messages Area */}
+      <div className="flex-1 overflow-y-auto px-4 py-2 chat-container">
         {messages.map((message) => (
           <ChatMessage key={message.id} content={message.content} isUser={message.isUser} timestamp={message.timestamp} />
         ))}
         <div ref={messagesEndRef} />
       </div>
-      <ChatInput onSendMessage={onSendMessage} disabled={isLoading} />
+
+      {/* Fixed Input Field */}
+      <div className="border-t bg-background p-4 sticky bottom-0">
+        <ChatInput onSendMessage={onSendMessage} disabled={isLoading} />
+      </div>
     </div>
   );
-};
+});

@@ -7,26 +7,28 @@ interface ChatMessageProps {
   timestamp: string;
 }
 
+/**
+ * ChatMessage Component
+ * Displays a user or AI-generated message inside the chat.
+ */
 export const ChatMessage = ({ content, isUser, timestamp }: ChatMessageProps) => {
+  /**
+   * Returns the appropriate icon for the message sender.
+   */
+  const renderIcon = () => (isUser ? <MessageCircle className="h-5 w-5" /> : <Bot className="h-5 w-5" />);
+
   return (
     <div
       className={cn(
-        "message-bubble",
+        "message-bubble flex gap-2 items-start",
         isUser ? "message-user" : "message-ai"
       )}
+      aria-label={isUser ? "User message" : "AI response"}
     >
-      <div className="flex items-start gap-2">
-        <div className="mt-1">
-          {isUser ? (
-            <MessageCircle className="h-5 w-5" />
-          ) : (
-            <Bot className="h-5 w-5" />
-          )}
-        </div>
-        <div className="flex-1">
-          <p className="text-sm md:text-base">{content}</p>
-          <span className="text-xs opacity-70 mt-2 block">{timestamp}</span>
-        </div>
+      <div className="mt-1">{renderIcon()}</div>
+      <div className="flex-1">
+        <p className="text-sm md:text-base">{content}</p>
+        <span className="text-xs opacity-70 mt-2 block">{timestamp}</span>
       </div>
     </div>
   );

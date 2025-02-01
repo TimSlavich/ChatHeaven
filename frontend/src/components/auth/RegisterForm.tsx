@@ -3,54 +3,47 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { Link, useNavigate } from "react-router-dom";
+import { registerUser } from "@/services/authService";
 
+/**
+ * RegisterForm Component
+ * Handles user registration and redirects after successful sign-up.
+ */
 export const RegisterForm = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
 
+  /**
+   * Handles user registration request.
+   * @param e
+   */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (password !== confirmPassword) {
-      toast({
-        title: "Error",
-        description: "Passwords do not match",
-        variant: "destructive",
-      });
+    if (!username.trim() || !password.trim() || !confirmPassword.trim()) {
+      toast({ title: "Error", description: "All fields are required", variant: "destructive" });
       return;
     }
 
+    if (password !== confirmPassword) {
+      toast({ title: "Error", description: "Passwords do not match", variant: "destructive" });
+      return;
+    }
+
+    setIsLoading(true);
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/register`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          username,
-          password,
-        }),
-      });
+      await registerUser(username, password);
 
-      if (!response.ok) {
-        throw new Error("Registration failed");
-      }
-
-      toast({
-        title: "Success",
-        description: "Registration successful, you can now log in.",
-      });
-
+      toast({ title: "Success", description: "Registration successful, you can now log in." });
       navigate("/login");
     } catch (error) {
-      toast({
-        title: "Error",
-        description: error.message || "Failed to register",
-        variant: "destructive",
-      });
+      toast({ title: "Registration failed", description: error.message, variant: "destructive" });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -58,6 +51,7 @@ export const RegisterForm = () => {
     <div className="flex min-h-screen items-center justify-center p-4">
       <form onSubmit={handleSubmit} className="space-y-4 w-full max-w-sm bg-card p-6 rounded-lg shadow-lg">
         <h2 className="text-2xl font-bold text-center mb-6">Register</h2>
+
         <div className="space-y-2">
           <Input
             type="text"
@@ -67,6 +61,7 @@ export const RegisterForm = () => {
             required
           />
         </div>
+
         <div className="space-y-2">
           <Input
             type="password"
@@ -76,6 +71,7 @@ export const RegisterForm = () => {
             required
           />
         </div>
+
         <div className="space-y-2">
           <Input
             type="password"
@@ -85,9 +81,11 @@ export const RegisterForm = () => {
             required
           />
         </div>
-        <Button type="submit" className="w-full">
-          Register
+
+        <Button type="submit" className="w-full" disabled={isLoading}>
+          {isLoading ? "Registering..." : "Register"}
         </Button>
+
         <div className="text-sm text-center">
           Already have an account?{" "}
           <Link to="/login" className="text-primary hover:underline">

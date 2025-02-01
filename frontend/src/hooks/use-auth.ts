@@ -1,5 +1,9 @@
 import { useState, useEffect } from "react";
 
+/**
+ * Custom hook for authentication management.
+ * Fetches user data and provides logout functionality.
+ */
 export const useAuth = () => {
     const [user, setUser] = useState<{ username: string } | null>(null);
     const [loading, setLoading] = useState(true);
@@ -13,7 +17,7 @@ export const useAuth = () => {
             }
 
             try {
-                const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/me`, {
+                const response = await fetch(`${import.meta.env.VITE_API_URL}/user/me`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
@@ -23,6 +27,10 @@ export const useAuth = () => {
 
                 const data = await response.json();
                 setUser(data);
+
+                // Apply saved theme
+                const savedTheme = localStorage.getItem("darkMode");
+                document.documentElement.classList.toggle("dark", savedTheme === "dark");
             } catch (error) {
                 localStorage.removeItem("token");
                 setUser(null);
@@ -34,5 +42,18 @@ export const useAuth = () => {
         fetchUser();
     }, []);
 
-    return { user, loading };
+    /**
+     * Logs out the user by removing authentication data from local storage.
+     */
+    const logout = () => {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user_id");
+        localStorage.removeItem("darkMode"); // Reset theme on logout
+        document.documentElement.classList.remove("dark");
+
+        setUser(null);
+        window.location.href = "/login";
+    };
+
+    return { user, loading, logout };
 };

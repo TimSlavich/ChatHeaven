@@ -4,6 +4,8 @@ env.read_envfile()
 
 
 class Settings:
+    """Application configuration settings."""
+
     DATABASE_URL: str = env.str(
         "DATABASE_URL",
         default="postgres://bot_user:bot_password@localhost:5432/chatbot",
