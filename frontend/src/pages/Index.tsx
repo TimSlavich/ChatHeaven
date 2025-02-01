@@ -22,7 +22,7 @@ const Index = () => {
     fetchChats,
     handleNewChat,
     handleRenameChat,
-    handleDeleteChat
+    handleDeleteChat,
   } = useChats();
 
   const { chatMessages, handleSendMessage, isLoading } = useWebSocket(selectedChatId);

@@ -33,6 +33,49 @@ async def get_user_chats(current_user: User = Depends(get_current_user)):
     return {"chats": chats}
 
 
+@router.get("/{chat_id}/history")
+async def get_chat_history(
+    chat_id: int, current_user: User = Depends(get_current_user)
+):
+    """
+    Retrieves the chat history for a specific chat.
+
+    :param chat_id: Chat ID.
+    :param current_user: Authenticated user.
+    :return: List of messages in the chat including bot responses.
+    """
+    chat = await Chat.get_or_none(id=chat_id, user=current_user)
+    if not chat:
+        raise HTTPException(status_code=404, detail="Chat not found or access denied")
+
+    messages = (
+        await ChatMessage.filter(chat=chat)
+        .order_by("timestamp")
+        .values("id", "user_message", "bot_response", "timestamp")
+    )
+
+    formatted_messages = []
+    for msg in messages:
+        formatted_messages.append(
+            {
+                "id": str(msg["id"]) + "_user",
+                "content": msg["user_message"],
+                "isUser": True,
+                "timestamp": msg["timestamp"],
+            }
+        )
+        formatted_messages.append(
+            {
+                "id": str(msg["id"]) + "_bot",
+                "content": msg["bot_response"],
+                "isUser": False,
+                "timestamp": msg["timestamp"],
+            }
+        )
+
+    return {"history": formatted_messages}
+
+
 @router.patch("/{chat_id}")
 async def rename_chat(
     chat_id: int, new_name: str, current_user: User = Depends(get_current_user)

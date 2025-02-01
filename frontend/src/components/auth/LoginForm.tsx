@@ -18,7 +18,7 @@ export const LoginForm = () => {
 
   /**
    * Handles user login request.
-   * @param e - Form submission event.
+   * @param e
    */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,11 +32,9 @@ export const LoginForm = () => {
     try {
       const data = await loginUser(username, password);
 
-      // Save authentication data
       localStorage.setItem("token", data.access_token);
       localStorage.setItem("user_id", data.user_id.toString());
 
-      // Apply the saved theme after login
       const savedTheme = localStorage.getItem("darkMode") || "light";
       document.documentElement.classList.toggle("dark", savedTheme === "dark");
 

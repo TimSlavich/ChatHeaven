@@ -98,5 +98,6 @@ export const useChats = () => {
         }
     };
 
+
     return { chats, selectedChatId, setSelectedChatId, fetchChats, handleNewChat, handleRenameChat, handleDeleteChat };
 };
