@@ -8,6 +8,8 @@ pnpm-debug.log*
 lerna-debug.log*
 .env
 __pycache__
+poetry.lock
+__pycache__
 
 node_modules
 dist
