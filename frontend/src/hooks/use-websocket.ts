@@ -46,6 +46,10 @@ export const useWebSocket = (selectedChatId: string | null) => {
 
     return () => {
       ws.close();
+      setChatMessages((prev) => ({
+        ...prev,
+        [selectedChatId]: [], 
+      }));
     };
   }, [selectedChatId]);
 
@@ -69,7 +73,6 @@ export const useWebSocket = (selectedChatId: string | null) => {
     socket.send(message);
     setIsLoading(false);
   };
-
 
   return { chatMessages, handleSendMessage, isLoading };
 };

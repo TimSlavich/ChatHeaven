@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { ChatWindow } from "@/components/chat/ChatWindow";
 import { Settings } from "@/components/settings/Settings";
@@ -7,25 +7,37 @@ import { Button } from "@/components/ui/button";
 import { Settings as SettingsIcon } from "lucide-react";
 import { useChats } from "@/hooks/use-chats";
 import { useWebSocket } from "@/hooks/use-websocket";
-import { useToast } from "@/hooks/use-toast";
 
-/**
- * Index Page
- * Manages chat interface, settings, and WebSocket communication.
- */
 const Index = () => {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const {
     chats,
     selectedChatId,
     setSelectedChatId,
-    fetchChats,
+    chatHistory,
+    fetchChatHistory,
     handleNewChat,
     handleRenameChat,
     handleDeleteChat,
   } = useChats();
 
-  const { chatMessages, handleSendMessage, isLoading } = useWebSocket(selectedChatId);
+ 
+  const { chatMessages, handleSendMessage, isLoading } = useWebSocket(selectedChatId, );
+
+  useEffect(() => {
+    if (selectedChatId) {
+      fetchChatHistory(selectedChatId);
+    }
+  }, [selectedChatId]);
+
+  useEffect(() => {
+    const savedTheme = localStorage.getItem("darkMode") === "dark";
+    if (savedTheme) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  }, []);
 
   return (
     <div className="flex h-screen overflow-hidden">
@@ -37,9 +49,8 @@ const Index = () => {
         onRenameChat={handleRenameChat}
         onDeleteChat={handleDeleteChat}
       />
-      {/* Main content */}
+
       <div className="flex-1 flex flex-col h-full overflow-hidden">
-        {/* Settings button */}
         <div className="flex justify-end p-4">
           <Sheet open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
             <SheetTrigger asChild>
@@ -52,10 +63,18 @@ const Index = () => {
             </SheetContent>
           </Sheet>
         </div>
-        {/* Chat Window should scroll independently */}
+
+        {/* Отображаем историю чата + новые сообщения */}
         <div className="flex-1 flex flex-col h-full overflow-hidden">
           {selectedChatId ? (
-            <ChatWindow messages={chatMessages[selectedChatId] || []} onSendMessage={handleSendMessage} isLoading={isLoading} />
+            <ChatWindow
+              messages={[
+                ...(chatHistory[selectedChatId]?.messages || []),
+                ...(chatMessages[selectedChatId] || [])
+              ]}
+              onSendMessage={handleSendMessage}
+              isLoading={isLoading}
+            />
           ) : (
             <div className="flex items-center justify-center h-full text-muted-foreground">
               Select a chat to start messaging

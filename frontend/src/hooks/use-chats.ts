@@ -2,17 +2,31 @@ import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 
 /**
- * Custom hook to manage user chats.
+ * Custom hook for managing chat functionality.
  */
 export const useChats = () => {
     const { toast } = useToast();
     const [chats, setChats] = useState<{ id: string; title: string; preview: string; timestamp: string }[]>([]);
     const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
+    const [chatHistory, setChatHistory] = useState<{
+        [chatId: string]: {
+            messages: { id: string; content: string; isUser: boolean; timestamp: string }[];
+            timestamp: string;
+        }
+    }>({});
+
 
     useEffect(() => {
         fetchChats();
     }, []);
 
+    useEffect(() => {
+        updateChatList();
+    }, [chatHistory]);
+
+    /**
+     * Загружает список чатов и обновляет превью последнего сообщения
+     */
     const fetchChats = async () => {
         const token = localStorage.getItem("token");
         if (!token) return;
@@ -29,12 +43,107 @@ export const useChats = () => {
             setChats(data.chats.map((chat: any) => ({
                 id: chat.id,
                 title: chat.name,
-                preview: "",
-                timestamp: "Recently",
+                preview: "Loading...",
+                timestamp: "Loading...",
             })));
+
+            // Загружаем историю для всех чатов
+            data.chats.forEach((chat: any) => {
+                fetchChatHistory(chat.id, true);
+            });
         } catch (error) {
             console.error("❌ Chat fetch error:", error);
         }
+    };
+
+    /**
+     * Загружает историю сообщений для выбранного чата
+     * @param chatId - ID чата
+     * @param silent - Не перезаписывать selectedChatId (для массовой загрузки)
+     */
+    const fetchChatHistory = async (chatId: string, silent = false) => {
+        const token = localStorage.getItem("token");
+        if (!token) {
+            console.error("❌ No token found in localStorage");
+            return;
+        }
+
+        try {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/chat/${chatId}/history`, {
+                method: "GET",
+                headers: { Authorization: `Bearer ${token}` },
+            });
+
+            if (!response.ok) {
+                throw new Error(`Error fetching chats: ${response.status} ${response.statusText}`);
+            }
+
+            const data = await response.json();
+
+            const chatMessages = data.history;
+
+            if (!Array.isArray(chatMessages)) {
+                throw new Error("Invalid chat history format received from server");
+            }
+
+            setChatHistory(prevState => {
+                const updatedState = {
+                    ...prevState,
+                    [chatId]: {
+                        messages: chatMessages.map((chat: any) => ({
+                            id: chat.id,
+                            content: chat.content,
+                            isUser: chat.isUser,
+                            timestamp: new Date(chat.timestamp).toLocaleString(),
+                        })),
+                        timestamp: new Date(chatMessages[chatMessages.length - 1]?.timestamp || Date.now()).toLocaleString(),
+                    }
+                };
+
+                updateChatList(updatedState);
+                return updatedState;
+            });
+
+        } catch (error) {
+            console.error("❌ Chat fetch error:", error);
+        }
+    };
+
+    /**
+     * Обновляет список чатов после загрузки истории
+     */
+    const updateChatList = (newChatHistory = chatHistory) => {
+        setChats(prevChats => prevChats.map(chat => {
+            const chatHistoryData = newChatHistory[chat.id]?.messages || [];
+            const lastMessage = chatHistoryData.length > 0 ? chatHistoryData[chatHistoryData.length - 1].content : "Nothing yet";
+            const lastTimestamp = newChatHistory[chat.id]?.timestamp ? formatDate(newChatHistory[chat.id]?.timestamp) : "No date";
+    
+            return {
+                ...chat,
+                preview: lastMessage,
+                timestamp: lastTimestamp 
+            };
+        }));
+    };
+
+    useEffect(() => {
+        if (selectedChatId) {
+            fetchChatHistory(selectedChatId);
+        }
+    }, [selectedChatId]);
+
+    const handleNewMessage = (chatId: string, message: any) => {
+        setChatHistory(prevState => {
+            const updatedState = {
+                ...prevState,
+                [chatId]: {
+                    messages: [...(prevState[chatId]?.messages || []), message],
+                    timestamp: new Date().toLocaleString(),
+                }
+            };
+            updateChatList(updatedState);
+            return updatedState;
+        });
     };
 
     const handleNewChat = async () => {
@@ -98,6 +207,14 @@ export const useChats = () => {
         }
     };
 
+    const formatDate = (timestamp: string) => {
+        const date = new Date(timestamp);
+        return date.toLocaleDateString("ru-RU", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric"
+        });
+    };
 
-    return { chats, selectedChatId, setSelectedChatId, fetchChats, handleNewChat, handleRenameChat, handleDeleteChat };
+    return { chats, selectedChatId, setSelectedChatId, fetchChats, handleNewChat, handleDeleteChat, handleRenameChat, fetchChatHistory, chatHistory, handleNewMessage };
 };
