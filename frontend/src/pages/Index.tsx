@@ -1,15 +1,12 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo } from "react";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { ChatWindow } from "@/components/chat/ChatWindow";
-import { Settings } from "@/components/settings/Settings";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Button } from "@/components/ui/button";
-import { Settings as SettingsIcon } from "lucide-react";
+import { SettingsButton } from "@/components/settings/SettingsButton";
 import { useChats } from "@/hooks/use-chats";
 import { useWebSocket } from "@/hooks/use-websocket";
+import { useTheme } from "@/hooks/use-theme";
 
 const Index = () => {
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const {
     chats,
     selectedChatId,
@@ -19,10 +16,11 @@ const Index = () => {
     handleNewChat,
     handleRenameChat,
     handleDeleteChat,
+    handleNewUserMessage
   } = useChats();
 
- 
-  const { chatMessages, handleSendMessage, isLoading } = useWebSocket(selectedChatId, );
+  const { chatMessages, handleSendMessage, isLoading } = useWebSocket(selectedChatId, handleNewUserMessage);
+  const { isDarkMode } = useTheme();
 
   useEffect(() => {
     if (selectedChatId) {
@@ -30,17 +28,13 @@ const Index = () => {
     }
   }, [selectedChatId]);
 
-  useEffect(() => {
-    const savedTheme = localStorage.getItem("darkMode") === "dark";
-    if (savedTheme) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-  }, []);
+  const messages = useMemo(() => [
+    ...(chatHistory[selectedChatId]?.messages || []),
+    ...(chatMessages[selectedChatId] || [])
+  ], [chatHistory, chatMessages, selectedChatId]);
 
   return (
-    <div className="flex h-screen overflow-hidden">
+    <div className={`flex h-screen overflow-hidden ${isDarkMode ? "dark" : ""}`}>
       <Sidebar
         chats={chats}
         onNewChat={handleNewChat}
@@ -49,32 +43,11 @@ const Index = () => {
         onRenameChat={handleRenameChat}
         onDeleteChat={handleDeleteChat}
       />
-
       <div className="flex-1 flex flex-col h-full overflow-hidden">
-        <div className="flex justify-end p-4">
-          <Sheet open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
-            <SheetTrigger asChild>
-              <Button variant="ghost" size="icon">
-                <SettingsIcon className="h-5 w-5" />
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="right" className="w-[300px] sm:w-[400px] bg-background border-l">
-              <Settings onClose={() => setIsSettingsOpen(false)} />
-            </SheetContent>
-          </Sheet>
-        </div>
-
-        {/* Отображаем историю чата + новые сообщения */}
+        <SettingsButton />
         <div className="flex-1 flex flex-col h-full overflow-hidden">
           {selectedChatId ? (
-            <ChatWindow
-              messages={[
-                ...(chatHistory[selectedChatId]?.messages || []),
-                ...(chatMessages[selectedChatId] || [])
-              ]}
-              onSendMessage={handleSendMessage}
-              isLoading={isLoading}
-            />
+            <ChatWindow messages={messages} onSendMessage={handleSendMessage} isLoading={isLoading} />
           ) : (
             <div className="flex items-center justify-center h-full text-muted-foreground">
               Select a chat to start messaging

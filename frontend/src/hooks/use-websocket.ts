@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
  * Custom WebSocket hook for real-time chat functionality.
  * Handles user messages, WebSocket connection, and bot responses.
  */
-export const useWebSocket = (selectedChatId: string | null) => {
+export const useWebSocket = (selectedChatId: string | null, onNewUserMessage: (chatId: string, message: any) => void) => {
   const [chatMessages, setChatMessages] = useState<Record<string, { id: string; content: string; isUser: boolean; timestamp: string }[]>>({});
   const [socket, setSocket] = useState<WebSocket | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -23,17 +23,14 @@ export const useWebSocket = (selectedChatId: string | null) => {
     };
 
     ws.onmessage = (event) => {
-      const newMessage = {
+      const botMessage = {
         id: Date.now().toString(),
         content: event.data,
         isUser: false,
-        timestamp: new Date().toLocaleTimeString(),
+        timestamp: new Date().toLocaleString()
       };
 
-      setChatMessages((prev) => ({
-        ...prev,
-        [selectedChatId]: [...(prev[selectedChatId] || []), newMessage],
-      }));
+      onNewUserMessage(selectedChatId, botMessage);
     };
 
     ws.onerror = (error) => {
@@ -48,7 +45,7 @@ export const useWebSocket = (selectedChatId: string | null) => {
       ws.close();
       setChatMessages((prev) => ({
         ...prev,
-        [selectedChatId]: [], 
+        [selectedChatId]: [],
       }));
     };
   }, [selectedChatId]);
@@ -62,17 +59,16 @@ export const useWebSocket = (selectedChatId: string | null) => {
       id: Date.now().toString(),
       content: message,
       isUser: true,
-      timestamp: new Date().toLocaleTimeString(),
+      timestamp: new Date().toISOString(),
     };
 
-    setChatMessages((prev) => ({
-      ...prev,
-      [selectedChatId]: [...(prev[selectedChatId] || []), userMessage],
-    }));
+    onNewUserMessage(selectedChatId, userMessage);
 
     socket.send(message);
+
     setIsLoading(false);
   };
+
 
   return { chatMessages, handleSendMessage, isLoading };
 };

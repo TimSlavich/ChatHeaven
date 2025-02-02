@@ -115,13 +115,13 @@ export const useChats = () => {
     const updateChatList = (newChatHistory = chatHistory) => {
         setChats(prevChats => prevChats.map(chat => {
             const chatHistoryData = newChatHistory[chat.id]?.messages || [];
-            const lastMessage = chatHistoryData.length > 0 ? chatHistoryData[chatHistoryData.length - 1].content : "Nothing yet";
+            const lastUserMessage = [...chatHistoryData].reverse().find(msg => msg.isUser)?.content || "Nothing yet";
             const lastTimestamp = newChatHistory[chat.id]?.timestamp ? formatDate(newChatHistory[chat.id]?.timestamp) : "No date";
-    
+
             return {
                 ...chat,
-                preview: lastMessage,
-                timestamp: lastTimestamp 
+                preview: lastUserMessage,
+                timestamp: lastTimestamp
             };
         }));
     };
@@ -132,7 +132,9 @@ export const useChats = () => {
         }
     }, [selectedChatId]);
 
-    const handleNewMessage = (chatId: string, message: any) => {
+    
+
+    const handleNewUserMessage = (chatId: string, message: any) => {
         setChatHistory(prevState => {
             const updatedState = {
                 ...prevState,
@@ -216,5 +218,5 @@ export const useChats = () => {
         });
     };
 
-    return { chats, selectedChatId, setSelectedChatId, fetchChats, handleNewChat, handleDeleteChat, handleRenameChat, fetchChatHistory, chatHistory, handleNewMessage };
+    return { chats, selectedChatId, setSelectedChatId, fetchChats, handleNewChat, handleDeleteChat, handleRenameChat, fetchChatHistory, chatHistory, handleNewUserMessage };
 };
