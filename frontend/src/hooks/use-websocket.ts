@@ -27,10 +27,11 @@ export const useWebSocket = (selectedChatId: string | null, onNewUserMessage: (c
         id: Date.now().toString(),
         content: event.data,
         isUser: false,
-        timestamp: new Date().toLocaleString()
+        timestamp: new Date().toLocaleString(),
       };
-
+    
       onNewUserMessage(selectedChatId, botMessage);
+      setIsLoading(false);
     };
 
     ws.onerror = (error) => {
@@ -52,21 +53,17 @@ export const useWebSocket = (selectedChatId: string | null, onNewUserMessage: (c
 
   const handleSendMessage = (message: string) => {
     if (!selectedChatId || !socket) return;
-
+  
     setIsLoading(true);
-
     const userMessage = {
       id: Date.now().toString(),
       content: message,
       isUser: true,
       timestamp: new Date().toISOString(),
     };
-
+  
     onNewUserMessage(selectedChatId, userMessage);
-
     socket.send(message);
-
-    setIsLoading(false);
   };
 
 

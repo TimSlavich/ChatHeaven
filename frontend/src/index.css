@@ -2,7 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-
 html,
 body {
   height: 100%;
@@ -31,8 +30,8 @@ body {
     --input: 240 5.9% 90%;
     --ring: 240 5.9% 10%;
     --radius: 0.75rem;
-    --chat-user: 240 5.9% 10%;
-    --chat-user-foreground: 0 0% 98%;
+    --chat-user: 0 0% 88%;
+    --chat-user-foreground: 240 10% 10%;
     --chat-ai: 240 4.8% 95.9%;
     --chat-ai-foreground: 240 5.9% 10%;
   }
@@ -49,7 +48,7 @@ body {
     --secondary: 240 5.9% 16%;
     --secondary-foreground: 0 0% 98%;
     --muted: 240 5.9% 16%;
-    --muted-foreground: 0 0% 60%;
+    --muted-foreground: 0 0% 80%;
     --accent: 240 5.9% 16%;
     --accent-foreground: 0 0% 98%;
     --destructive: 0 62.8% 30%;
@@ -57,7 +56,7 @@ body {
     --border: 240 10% 20%;
     --input: 240 10% 20%;
     --ring: 240 10% 80%;
-    --chat-user: 0 0% 20%;
+    --chat-user: 0 0% 15%;
     --chat-user-foreground: 0 0% 98%;
     --chat-ai: 240 5.9% 20%;
     --chat-ai-foreground: 0 0% 98%;
@@ -89,15 +88,19 @@ body {
   }
 
   .message-bubble {
-    @apply rounded-lg p-4 max-w-[80%] md:max-w-[70%] animate-slide-in;
+    @apply rounded-lg p-4 max-w-[80%] md:max-w-[70%] animate-slide-in border;
   }
 
   .message-user {
-    @apply bg-chat-user text-chat-user-foreground self-end;
+    @apply bg-chat-user text-black self-end border border-gray-400;
+  }
+
+  .dark .message-user {
+    @apply bg-[#374151] text-gray-100 self-end border border-gray-400;
   }
 
   .message-ai {
-    @apply bg-chat-ai text-chat-ai-foreground self-start;
+    @apply bg-chat-ai text-chat-ai-foreground self-start border border-gray-400;
   }
 
   .chat-item {
@@ -112,75 +115,145 @@ body {
     @apply flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity;
   }
 
-  /* ✅ Выбранный чат - СВЕТЛАЯ ТЕМА */
   .chat-item.selected {
     @apply bg-primary text-white font-semibold;
   }
 
-  /* ✅ Гарантия видимости текста в светлой теме при выборе */
   .chat-item.selected .chat-title,
   .chat-item.selected .chat-preview,
   .chat-item.selected .chat-timestamp {
     @apply text-white;
   }
 
-  /* ✅ Наведение */
   .chat-item:hover {
     @apply bg-muted text-foreground;
   }
 
-  /* ✅ Гарантия видимости текста при наведении */
   .chat-item:hover .chat-title,
   .chat-item:hover .chat-preview,
   .chat-item:hover .chat-timestamp {
     @apply text-foreground;
   }
 
-  /* ✅ Исправление в тёмной теме */
   .dark .chat-item.selected {
     @apply bg-gray-700 text-white;
   }
 
-  /* ✅ Гарантия видимости текста в тёмной теме при выборе */
   .dark .chat-item.selected .chat-title,
   .dark .chat-item.selected .chat-preview,
   .dark .chat-item.selected .chat-timestamp {
     @apply text-white;
   }
 
-  /* ✅ Исправление в тёмной теме при наведении */
   .dark .chat-item:hover {
     @apply bg-gray-600 text-white;
   }
 
-  /* ✅ Исправление видимости текста в тёмной теме при наведении */
   .dark .chat-item:hover .chat-title,
   .dark .chat-item:hover .chat-preview,
   .dark .chat-item:hover .chat-timestamp {
     @apply text-white;
   }
 
-  /* ✅ Уменьшаем размер текста времени создания чата */
   .chat-timestamp {
     @apply text-[10px] text-muted-foreground;
   }
 
-  /* ✅ Кнопки редактирования и удаления */
   .chat-actions {
     @apply flex gap-1 w-[60px] justify-end shrink-0 opacity-0 transition-opacity;
   }
 
-  /* ✅ Делаем кнопки видимыми только при наведении */
   .chat-item:hover .chat-actions {
     @apply opacity-100;
   }
 
-  /* ✅ Стили для кнопок */
   .edit-button {
     @apply text-muted-foreground hover:text-foreground;
   }
 
   .delete-button {
     @apply text-destructive hover:text-red-500;
+  }
+
+  /* Markdown (prose) стили */
+  .prose {
+    @apply text-foreground;
+  }
+
+  .dark .prose {
+    @apply text-gray-300;
+  }
+
+  .prose h1,
+  .prose h2,
+  .prose h3,
+  .prose h4,
+  .prose h5,
+  .prose h6 {
+    @apply text-gray-800 font-semibold;
+  }
+
+  .dark .prose h1,
+  .dark .prose h2,
+  .dark .prose h3,
+  .dark .prose h4,
+  .dark .prose h5,
+  .dark .prose h6 {
+    @apply text-gray-100;
+  }
+
+  .prose ol {
+    @apply list-decimal pl-6;
+  }
+
+  .prose ul {
+    @apply list-disc pl-6;
+  }
+
+  .prose strong {
+    @apply font-bold text-gray-900;
+  }
+
+  .dark .prose strong {
+    @apply text-white;
+  }
+
+  .prose em {
+    @apply italic text-gray-700;
+  }
+
+  .dark .prose em {
+    @apply text-gray-400;
+  }
+
+  .prose blockquote {
+    @apply border-l-4 border-gray-500 pl-4 italic text-gray-600;
+  }
+
+  .dark .prose blockquote {
+    @apply text-gray-300 border-gray-400;
+  }
+}
+
+.loader {
+  border-top-color: transparent;
+  border-right-color: gray;
+  border-bottom-color: gray;
+  border-left-color: gray;
+  border-width: 4px;
+  border-style: solid;
+  border-radius: 50%;
+  width: 1.5rem;
+  height: 1.5rem;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
   }
 }

@@ -34,7 +34,6 @@ async def websocket_endpoint(websocket: WebSocket, chat_id: int):
         await websocket.close(code=1000, reason="User not found")
         return
 
-    # Load existing chat history and convert it to LangChain format
     chat_history = []
     messages = await ChatMessage.filter(chat=chat).order_by("timestamp").values("user_message", "bot_response")
 
@@ -54,10 +53,8 @@ async def websocket_endpoint(websocket: WebSocket, chat_id: int):
                 await websocket.close(code=1000, reason="Chat deleted")
                 break
 
-            # Generate bot response considering chat history
             bot_response = await generate_bot_response(user_message, chat_history)
 
-            # Save the new message in the database
             await ChatMessage.create(
                 chat=chat,
                 user=user,
@@ -65,11 +62,9 @@ async def websocket_endpoint(websocket: WebSocket, chat_id: int):
                 bot_response=bot_response,
             )
 
-            # Update the chat history
             chat_history.append({"role": "user", "content": user_message})
             chat_history.append({"role": "assistant", "content": bot_response})
 
-            # Send response to the connected client
             if chat_id in connected_clients:
                 await connected_clients[chat_id].send_text(bot_response)
 

@@ -24,19 +24,24 @@ export const ChatWindow = memo(({ messages, onSendMessage, isLoading }: ChatWind
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+  }, [messages, isLoading]);
+
+  console.log("isLoading:", isLoading);
 
   return (
     <div className="flex flex-col h-full w-full max-h-screen">
-      {/* Scrollable Messages Area */}
       <div className="flex-1 overflow-y-auto px-4 py-2 chat-container">
         {messages.map((message) => (
           <ChatMessage key={message.id} content={message.content} isUser={message.isUser} timestamp={message.timestamp} />
         ))}
+        {isLoading && (
+          <div className="message-bubble message-ai flex items-center gap-2 p-4 rounded-lg">
+            <div className="loader animate-spin h-5 w-5 border-4 border-gray-300 border-t-transparent rounded-full"></div>
+            <span className="text-gray-500">Печатает...</span>
+          </div>
+        )}
         <div ref={messagesEndRef} />
       </div>
-
-      {/* Fixed Input Field */}
       <div className="border-t bg-background p-4 sticky bottom-0">
         <ChatInput onSendMessage={onSendMessage} disabled={isLoading} />
       </div>
