@@ -2,8 +2,8 @@
 
 **ChatHeaven** — это современный чат с поддержкой WebSocket, FastAPI, Tortoise ORM и PostgreSQL.
 
-![ChatHeaven Screenshot]([Imgur](https://i.imgur.com/P0dUWI7.png))
-![ChatHeaven Screenshot]([Imgur](https://i.imgur.com/eLG2kK1.png))
+![ChatHeaven Screenshot]((https://i.imgur.com/P0dUWI7.png))
+![ChatHeaven Screenshot]((https://i.imgur.com/eLG2kK1.png))
 
 ---
 
