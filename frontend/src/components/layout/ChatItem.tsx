@@ -66,8 +66,8 @@ export const ChatItem = memo(
           <div className="w-full text-left p-3 flex justify-between items-center group cursor-pointer rounded-lg">
             <div className="flex-1 min-w-0 mr-3">
               <div className="chat-title truncate">{chat.title}</div>
-              <div className="chat-preview truncate max-w-[150px] text-gray-500 text-xs">{chat.preview || "No messages yet"}</div>
-              <div className="chat-timestamp text-gray-400 text-xs">{chat.timestamp}</div>
+              <div className="chat-preview truncate max-w-[150px] text-sm">{chat.preview}</div>
+              <div className="chat-timestamp">{chat.timestamp}</div>
             </div>
             <div className="flex items-center opacity-0 group-hover:opacity-100 transition-opacity">
               <Button

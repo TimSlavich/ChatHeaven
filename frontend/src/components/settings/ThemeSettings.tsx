@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
@@ -9,13 +9,22 @@ import { useToast } from "@/hooks/use-toast";
  */
 export const ThemeSettings = () => {
   const { toast } = useToast();
-
-  const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
+  const [isDarkMode, setIsDarkMode] = useState(() => {
     return localStorage.getItem("darkMode") === "dark";
   });
 
+  // Ensure theme applies correctly on mount
+  useEffect(() => {
+    if (isDarkMode) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  }, [isDarkMode]);
+
   /**
-   * Переключает тему и сохраняет в localStorage.
+   * Toggles theme and saves preference.
+   * @param checked - True if dark mode is enabled, false otherwise.
    */
   const handleDarkModeToggle = (checked: boolean) => {
     setIsDarkMode(checked);
