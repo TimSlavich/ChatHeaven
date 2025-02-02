@@ -257,3 +257,29 @@ body {
     transform: rotate(360deg);
   }
 }
+
+@layer utilities {
+  .chat-edit-mode {
+    @apply bg-white border border-gray-300 text-black rounded-lg p-2;
+  }
+
+  .dark .chat-edit-mode {
+    @apply bg-white text-black border-gray-300;
+  }
+
+  .edit-button {
+    @apply text-muted-foreground hover:text-foreground;
+  }
+
+  .delete-button {
+    @apply text-destructive hover:text-red-500;
+  }
+
+  .chat-input-edit {
+    @apply bg-white text-black border border-gray-300 rounded-lg p-2 w-full;
+  }
+
+  .dark .chat-input-edit {
+    @apply bg-white text-black border-gray-300;
+  }
+}

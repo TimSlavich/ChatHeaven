@@ -127,7 +127,7 @@ export const useChats = () => {
     };
 
     useEffect(() => {
-        if (selectedChatId) {
+        if (selectedChatId && chatHistory[selectedChatId] === undefined) {
             fetchChatHistory(selectedChatId);
         }
     }, [selectedChatId]);
@@ -192,17 +192,25 @@ export const useChats = () => {
     const handleDeleteChat = async (chatId: string) => {
         const token = localStorage.getItem("token");
         if (!token) return;
-
+    
         try {
             const response = await fetch(`${import.meta.env.VITE_API_URL}/chat/${chatId}`, {
                 method: "DELETE",
                 headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
             });
-
+    
             if (!response.ok) throw new Error("Failed to delete chat");
-
-            setChats((prev) => prev.filter((chat) => chat.id !== chatId));
-            setSelectedChatId(null);
+    
+            setChats((prevChats) => {
+                const updatedChats = prevChats.filter((chat) => chat.id !== chatId);
+    
+                if (selectedChatId === chatId) {
+                    setSelectedChatId(updatedChats.length > 0 ? updatedChats[0].id : null);
+                }
+    
+                return updatedChats;
+            });
+    
             toast({ title: "Chat deleted", description: "The chat has been removed" });
         } catch (error) {
             console.error("❌ Chat deletion error:", error);
