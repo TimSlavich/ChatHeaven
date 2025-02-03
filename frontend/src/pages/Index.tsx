@@ -60,10 +60,10 @@ const Index = () => {
           {isMobile && (
             <Button variant="ghost" onClick={() => setChatMenuOpen(true)} className="flex items-center">
               <Menu className="h-6 w-6" />
-              <span className="ml-2">Чаты</span>
+              <span className="ml-2">Chats</span>
             </Button>
           )}
-          <div className="ml-auto"> {/* Перемещение настроек вправо */}
+          <div className="ml-auto">
             <SettingsButton />
           </div>
         </div>
@@ -72,7 +72,7 @@ const Index = () => {
             <ChatWindow messages={messages} onSendMessage={handleSendMessage} isLoading={isLoading} />
           ) : (
             <div className="flex items-center justify-center h-full text-muted-foreground">
-              {isMobile ? "Выберите чат в меню" : "Select a chat to start messaging"}
+              {isMobile ? "Select a chat" : "Select a chat to start messaging"}
             </div>
           )}
         </div>
