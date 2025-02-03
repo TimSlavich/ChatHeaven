@@ -25,7 +25,7 @@ export const useChats = () => {
     }, [chatHistory]);
 
     /**
-     * Загружает список чатов и обновляет превью последнего сообщения
+     * Fetches the list of chats and updates the preview of the last message.
      */
     const fetchChats = async () => {
         const token = localStorage.getItem("token");
@@ -47,7 +47,6 @@ export const useChats = () => {
                 timestamp: "Loading...",
             })));
 
-            // Загружаем историю для всех чатов
             data.chats.forEach((chat: any) => {
                 fetchChatHistory(chat.id, true);
             });
@@ -57,9 +56,9 @@ export const useChats = () => {
     };
 
     /**
-     * Загружает историю сообщений для выбранного чата
-     * @param chatId - ID чата
-     * @param silent - Не перезаписывать selectedChatId (для массовой загрузки)
+     * Fetches the chat history for the selected chat.
+     * @param chatId - The ID of the chat.
+     * @param silent - Prevents overwriting `selectedChatId` (used for bulk loading).
      */
     const fetchChatHistory = async (chatId: string, silent = false) => {
         const token = localStorage.getItem("token");
@@ -110,7 +109,7 @@ export const useChats = () => {
     };
 
     /**
-     * Обновляет список чатов после загрузки истории
+     * Updates the chat list after loading chat history.
      */
     const updateChatList = (newChatHistory = chatHistory) => {
         setChats(prevChats => prevChats.map(chat => {
@@ -132,8 +131,10 @@ export const useChats = () => {
         }
     }, [selectedChatId]);
 
-    
 
+    /**
+     * Handles a new user message.
+     */
     const handleNewUserMessage = (chatId: string, message: any) => {
         setChatHistory(prevState => {
             const updatedState = {
@@ -148,6 +149,9 @@ export const useChats = () => {
         });
     };
 
+    /**
+     * Creates a new chat.
+     */
     const handleNewChat = async () => {
         const token = localStorage.getItem("token");
         const userId = localStorage.getItem("user_id");
@@ -170,6 +174,9 @@ export const useChats = () => {
         }
     };
 
+    /**
+     * Rename a chat.
+     */
     const handleRenameChat = async (chatId: string, newTitle: string) => {
         const token = localStorage.getItem("token");
         if (!token) return;
@@ -189,34 +196,41 @@ export const useChats = () => {
         }
     };
 
+    /**
+     * Delete a chat.
+     */
     const handleDeleteChat = async (chatId: string) => {
         const token = localStorage.getItem("token");
         if (!token) return;
-    
+
         try {
             const response = await fetch(`${import.meta.env.VITE_API_URL}/chat/${chatId}`, {
                 method: "DELETE",
                 headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
             });
-    
+
             if (!response.ok) throw new Error("Failed to delete chat");
-    
+
             setChats((prevChats) => {
                 const updatedChats = prevChats.filter((chat) => chat.id !== chatId);
-    
+
                 if (selectedChatId === chatId) {
                     setSelectedChatId(updatedChats.length > 0 ? updatedChats[0].id : null);
                 }
-    
+
                 return updatedChats;
             });
-    
+
             toast({ title: "Chat deleted", description: "The chat has been removed" });
         } catch (error) {
             console.error("❌ Chat deletion error:", error);
         }
     };
 
+
+    /**
+     * Formats a date string.
+     */
     const formatDate = (timestamp: string) => {
         const date = new Date(timestamp);
         return date.toLocaleDateString("ru-RU", {

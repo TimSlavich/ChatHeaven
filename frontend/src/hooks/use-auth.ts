@@ -28,7 +28,6 @@ export const useAuth = () => {
                 const data = await response.json();
                 setUser(data);
 
-                // Apply saved theme
                 const savedTheme = localStorage.getItem("darkMode");
                 document.documentElement.classList.toggle("dark", savedTheme === "dark");
             } catch (error) {
@@ -48,7 +47,7 @@ export const useAuth = () => {
     const logout = () => {
         localStorage.removeItem("token");
         localStorage.removeItem("user_id");
-        localStorage.removeItem("darkMode"); // Reset theme on logout
+        localStorage.removeItem("darkMode");
         document.documentElement.classList.remove("dark");
 
         setUser(null);

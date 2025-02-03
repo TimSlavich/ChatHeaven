@@ -4,10 +4,10 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 
 def get_documents_from_file(filename: str) -> list[Document]:
     """
-    Чтение текста из файла и разбиение на документы.
+    Reads text from a file and splits it into documents.
 
-    :param filename: Имя файла с текстом.
-    :return: Список документов.
+    :param filename: Name of the file containing the text.
+    :return: List of documents.
     """
 
     with open(filename, encoding="UTF-8") as file:

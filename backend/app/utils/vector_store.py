@@ -8,10 +8,10 @@ env.read_envfile(".env")
 
 def create_db(docs: list[Document]) -> FAISS:
     """
-    Создание базы данных векторных представлений на основе документов.
+    Creates a vector representation database based on documents.
 
-    :param docs: Список документов.
-    :return: Объект FAISS с векторными представлениями.
+    :param docs: List of documents.
+    :return: FAISS object with vector representations.
     """
 
     api_key = env.str("OPENAI_API_KEY", default=None)

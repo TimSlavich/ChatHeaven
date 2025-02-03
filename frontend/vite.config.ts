@@ -7,11 +7,14 @@ export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
     port: 8080,
+    strictPort: true,
+    cors: true,
     allowedHosts: [
       "localhost",
       "127.0.0.1",
-      "2a94-176-36-148-164.ngrok-free.app"
+      "f668-176-36-148-164.ngrok-free.app"
     ],
+    historyApiFallback: true,
   },
   plugins: [
     react(),

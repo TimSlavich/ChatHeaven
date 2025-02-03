@@ -8,10 +8,10 @@ from app.utils.vector_search import vector_search
 
 def create_agent(vector_store: FAISS) -> AgentExecutor:
     """
-    Создание агента для обработки запросов пользователя с использованием векторного поиска.
+    Creates an agent to handle user queries using vector search.
 
-    :param vector_store: Объект FAISS для поиска по документам.
-    :return: Агент для обработки запросов.
+    :param vector_store: FAISS object for document search.
+    :return: Agent for processing user queries.
     """
     llm = ChatOpenAI(
         model="gpt-4o",

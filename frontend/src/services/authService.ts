@@ -33,5 +33,5 @@ export const registerUser = async (username: string, password: string) => {
     throw new Error(`Registration failed: ${response.status} - ${errorText}`);
   }
 
-  return response.json(); // Return parsed JSON response
+  return response.json();
 };
