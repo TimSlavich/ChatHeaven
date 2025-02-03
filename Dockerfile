@@ -3,8 +3,9 @@ FROM python:3.12 AS backend
 
 WORKDIR /app
 COPY backend /app
+COPY backend/pyproject.toml backend/poetry.lock /app/
 
-# Устанавливаем Poetry в билд-контейнере (но он не переносится)
+# Устанавливаем Poetry
 RUN pip install poetry \
     && poetry config virtualenvs.create false \
     && poetry install --no-root
@@ -21,12 +22,16 @@ FROM python:3.12
 
 WORKDIR /app
 
-# Устанавливаем Poetry в финальном контейнере
-RUN pip install poetry \
-    && poetry config virtualenvs.create false
-
-# Копируем backend и frontend
+# Копируем backend
 COPY --from=backend /app /app
+
+# Устанавливаем Poetry
+RUN pip install poetry \
+    && poetry config virtualenvs.create false \
+    && poetry install --no-root
+
+# Копируем frontend
 COPY --from=frontend /frontend/dist /app/frontend
 
 CMD ["poetry", "run", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+
