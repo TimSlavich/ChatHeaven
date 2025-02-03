@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 
+
 /**
  * Custom hook for authentication management.
  * Fetches user data and provides logout functionality.
