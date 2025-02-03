@@ -4,7 +4,7 @@ FROM python:3.12 AS backend
 WORKDIR /app
 COPY backend /app
 
-# Устанавливаем Poetry глобально
+# Устанавливаем Poetry в билд-контейнере (но он не переносится)
 RUN pip install poetry \
     && poetry config virtualenvs.create false \
     && poetry install --no-root
@@ -21,11 +21,12 @@ FROM python:3.12
 
 WORKDIR /app
 
-# Копируем backend и frontend из билд-стадий
-COPY --from=backend /app /app
-COPY --from=backend /root/.local /root/.local
-ENV PATH="/root/.local/bin:$PATH"
+# Устанавливаем Poetry в финальном контейнере
+RUN pip install poetry \
+    && poetry config virtualenvs.create false
 
+# Копируем backend и frontend
+COPY --from=backend /app /app
 COPY --from=frontend /frontend/dist /app/frontend
 
 CMD ["poetry", "run", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
