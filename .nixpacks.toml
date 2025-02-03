@@ -1,0 +1,11 @@
+[phases.setup]
+nixPkgs = ["python3.12", "nodejs", "postgresql"]
+
+[phases.build]
+cmds = [
+  "pip install poetry",
+  "poetry install"
+]
+
+[start]
+cmd = "poetry run uvicorn backend.main:app --host 0.0.0.0 --port 8000"
