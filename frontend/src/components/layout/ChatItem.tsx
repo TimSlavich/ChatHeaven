@@ -18,7 +18,7 @@ interface ChatItemProps {
   onStartEdit: (chatId: string, title: string, e: React.MouseEvent) => void;
   onSaveEdit: (chatId: string, e: React.MouseEvent) => void;
   onCancelEdit: (e: React.MouseEvent) => void;
-  onDeleteChat: (chatId: string, e: React.MouseEvent) => void;
+  onDeleteChat: (chatId: string) => void;
   setNewTitle: (title: string) => void;
 }
 
@@ -81,7 +81,10 @@ export const ChatItem = memo(
                 size="icon"
                 variant="ghost"
                 className="bg-red-600 hover:bg-red-500 text-white p-2 rounded-lg transition-colors ml-2"
-                onClick={(e) => onDeleteChat(chat.id, e)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDeleteChat(chat.id);
+                }}
               >
                 <Trash2 className="h-4 w-4" />
               </Button>

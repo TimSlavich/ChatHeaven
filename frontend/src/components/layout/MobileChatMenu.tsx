@@ -9,7 +9,7 @@ interface MobileChatMenuProps {
   onClose: () => void;
   chats: { id: string; title: string; preview: string; timestamp: string }[];
   selectedChatId: string | null;
-  onSelectChat: (chatId: string) => void;
+  onSelectChat: (chatId: string | null) => void;
   onRenameChat: (chatId: string, newTitle: string) => void;
   onDeleteChat: (chatId: string) => void;
   onNewChat: () => void;
@@ -28,11 +28,18 @@ export const MobileChatMenu = ({
   const [editingChatId, setEditingChatId] = useState<string | null>(null);
   const [newTitle, setNewTitle] = useState("");
 
+  const handleDeleteChat = (chatId: string) => {
+    if (selectedChatId === chatId) {
+      onSelectChat(null);
+    }
+    onDeleteChat(chatId);
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="w-full max-w-md">
+      <DialogContent className="dialog-content w-full max-w-md">
         <DialogHeader>
-          <DialogTitle>Выберите чат</DialogTitle>
+          <DialogTitle>{chats.length > 0 ? "Chats" : "No chats yet"}</DialogTitle>
         </DialogHeader>
         <ScrollArea className="max-h-[400px] p-2">
           {chats.map((chat) => (
@@ -64,13 +71,13 @@ export const MobileChatMenu = ({
                 setEditingChatId(null);
                 setNewTitle("");
               }}
-              onDeleteChat={onDeleteChat}
+              onDeleteChat={handleDeleteChat}
               setNewTitle={setNewTitle}
             />
           ))}
         </ScrollArea>
         <Button onClick={onNewChat} className="w-full mt-2">
-          Новый чат
+          New Chat
         </Button>
       </DialogContent>
     </Dialog>
